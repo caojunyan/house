@@ -24,16 +24,16 @@
     </div>
     </el-tab-pane>
     <el-tab-pane label="添加客户" name="add">
-      <div style="margin: 20px;"></div>
-        <el-form :label-position="labelPosition" label-width="80px" :model="addCustomer">
-          <el-form-item label="名称">
-            <el-input v-model="addCustomer.name"></el-input>
+      <div  class="addForm">
+        <el-form :label-position="labelPosition" label-width="60px" :model="addCustomer">
+          <el-form-item label="名称：">
+            <el-input v-model="addCustomer.name" placeholder="请输入客户姓名"></el-input>
           </el-form-item>
-          <el-form-item label="电话">
-            <el-input v-model="addCustomer.phone"></el-input>
+          <el-form-item label="电话：">
+            <el-input v-model="addCustomer.phone" placeholder="请输入手机号码"></el-input>
           </el-form-item>
-          <el-form-item label="备注">
-            <el-input v-model="addCustomer.note"></el-input>
+          <el-form-item label="备注：">
+            <el-input v-model="addCustomer.note" type="textarea" placeholder="备注"></el-input>
           </el-form-item>
           <div class="upload">
             <p>身份证图片（共有房产需提供两人身份证和关系证明资料，如结婚证和户口本）</p>
@@ -46,8 +46,70 @@
               <img v-if="imageUrl" :src="imageUrl" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
+             <p>征信报告 （提供15天以内人行详细版征信报告）</p>
+            <el-upload
+              class="avatar-uploader"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload">
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+             <p>商业产权调查 （提供15天以内人行详细版征信报告）</p>
+            <el-upload
+              class="avatar-uploader"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload">
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+             <p>房产证或购房合同加购房发票 （提供15天以内人行详细版征信报告）</p>
+            <el-upload
+              class="avatar-uploader"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload">
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+             <p>抵押给银行的必须要抵押或按揭合同</p>
+            <el-upload
+              class="avatar-uploader"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload">
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+             <p>工作证明或营业执照复印件</p>
+            <el-upload
+              class="avatar-uploader"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload">
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+             <p>有离婚的，离婚协议涉及财产分割必须要民政局的盖章</p>
+            <el-upload
+              class="avatar-uploader"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload">
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
           </div>
-      </el-form>
+        </el-form>
+         <el-button type="primary" @click="addCustomer" style="width:100%;margin-top:30px">提交</el-button>
+      </div>
     </el-tab-pane>
   </el-tabs>
 </div>
@@ -93,6 +155,9 @@
           this.$message.error('上传头像图片大小不能超过 2MB!');
         }
         return isJPG && isLt2M;
+      },
+      addCustomer(){
+
       }
     },
     mounted(){
@@ -136,8 +201,16 @@
       padding-top 10px
       padding-bottom 10px
 
-
+  .addForm
+    width 100%
+    padding 10px
   .upload
     width 100%
+    padding 10px
+    padding-bottom 0
+    p 
+      margin-top 15px
+      line-height 33px
+      font-size 1.3rem
 
 </style>
