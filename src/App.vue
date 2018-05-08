@@ -1,7 +1,7 @@
 <template>
   <div id="app">
 
-    <router-view/>
+    <router-view v-wechat-title="$route.meta.title"></router-view>
   </div>
 </template>
 
@@ -41,7 +41,11 @@ export default {
   height: 178px;
   display: block;
 }
-
+.border-none .el-input__inner{
+  border: none!important;
+  outline :none;
+  height :50px;
+}
 .el-tabs__header
   width 100%
   .el-tabs__nav-wrap

@@ -46,6 +46,7 @@
               <img v-if="imageUrl" :src="imageUrl" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
+
              <p>征信报告 （提供15天以内人行详细版征信报告）</p>
             <el-upload
               class="avatar-uploader"
@@ -61,9 +62,9 @@
               class="avatar-uploader"
               action="https://jsonplaceholder.typicode.com/posts/"
               :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              :on-success="handleIdcardsuccess"
+              :before-upload="beforeidcard">
+              <img v-if="idCard" :src="idCard" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
              <p>房产证或购房合同加购房发票 （提供15天以内人行详细版征信报告）</p>
@@ -108,7 +109,7 @@
             </el-upload>
           </div>
         </el-form>
-         <el-button type="primary" @click="addCustomer" style="width:100%;margin-top:30px">提交</el-button>
+         <el-button type="primary" @click="subCustomer" style="width:100%;margin-top:30px">送审</el-button>
       </div>
     </el-tab-pane>
   </el-tabs>
@@ -131,6 +132,7 @@
           phone: '',
           note: ''
         },
+        idCard:"",
         imageUrl: ''
       };
     },
@@ -141,8 +143,23 @@
       onSubmit() {
         console.log('submit!');
       },
+      handleIdcardsuccess(res, file) {
+        this.idCard = URL.createObjectURL(file.raw);
+      },
       handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
+      },
+      beforeidcard(file) {
+        const isJPG = file.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG) {
+          this.$message.error('上传头像图片只能是 JPG 格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 2MB!');
+        }
+        return isJPG && isLt2M;
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
@@ -156,7 +173,7 @@
         }
         return isJPG && isLt2M;
       },
-      addCustomer(){
+      subCustomer(){
 
       }
     },
@@ -208,7 +225,7 @@
     width 100%
     padding 10px
     padding-bottom 0
-    p 
+    p
       margin-top 15px
       line-height 33px
       font-size 1.3rem
