@@ -46,6 +46,31 @@ export default {
   outline :none;
   height :50px;
 }
+.el-icon-delete:before {
+  position:absolute;
+  right :0;
+  top:0;
+}
+.el-dialog{
+  width :100% !important;
+}
+.el-dialog__header{
+  padding:0 !important;
+}
+.el-dialog__body{
+  padding:0 !important;
+}
+.el-button--text{
+  color:#000;
+}
+.el-button--text:focus, .el-button--text:hover{
+  color:#000;
+}
+.el-upload-list--picture-card .el-upload-list__item-actions:hover span {
+  display: inline-block;
+  text-align: center;
+  margin: 0 auto !important;
+}
 .el-tabs__header
   width 100%
   .el-tabs__nav-wrap

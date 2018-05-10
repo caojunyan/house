@@ -7,6 +7,7 @@ import Sales from '../components/sales/sales'
 import Abnormal from '../components/abnormal/abnormal'
 import Deal from '../components/deal/deal'
 import Detail from '../components/detail/detail'
+
 Vue.use(ElementUI);
 Vue.use(Router)
 
@@ -51,6 +52,6 @@ export default new Router({
       meta:{
         title:"客户详情"
       }
-    }
+    },
   ]
 })

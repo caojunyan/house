@@ -14,7 +14,7 @@
             <el-input v-model="user.password" placeholder="请输入密码" type="password" class="border-none"></el-input>
           </el-form-item>
           <el-form-item style="margin-top: 40px">
-            <el-button type="primary" @click="submitForm">登陆</el-button>
+            <el-button type="primary" @click="submitForm('user')">登陆</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -51,28 +51,47 @@
             }
           }
         },
-      methods:{
-        submitForm(){
-          getAdmin(this,this.user).then(res=>{
-            if(res){
-              getUser(this).then(res=>{
-                if(res.data.data.depart==="业务B组"){
-                  this.$router.push({ path: '/sales' });
-                }else if(res.data.data.depart==="资产管理部门"){
-                  this.$router.push({ path: '/abnormal' });
+        methods:{
+          submitForm(formName){
+            this.$refs[formName].validate((valid) => {
+            if (valid) {
+              getAdmin(this,this.user).then(res=>{
+                console.log(res)
+                localStorage.setItem('user_pass', res.password);
+                if(res){
+                  getUser(this).then(res=>{
+                    if(res.data.data.depart==="业务B组"){
+                      this.$router.push({ path: '/sales' });
+                    }else if(res.data.data.depart==="资产管理部门"){
+                      this.$router.push({ path: '/abnormal' });
+                    }else{
+                      this.$message.error('您没有登录权限');
+                      return false
+                    }
+                  })
                 }else{
                   this.$message.error('您没有登录权限');
-                  return false
                 }
+              }).catch(err=>{
+                alert('用户名或密码错误')
+                return false
               })
-            }else{
-              this.$message.error('您没有登录权限');
+            } else {
+              console.log('error submit!!');
+              return false;
             }
-          }).catch(err=>{
-            console.log(err)
+          });
+        },
+          init() {
+          this.$nextTick( ()=> {
+            this.user.email = localStorage.getItem('user_name');
+            this.user.password = localStorage.getItem('user_pass');
           })
+        },
+      },
+        mounted(){
+          this.init()
         }
-      }
     }
 </script>
 

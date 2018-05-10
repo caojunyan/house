@@ -4,6 +4,16 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import VueWechatTitle from 'vue-wechat-title';
+import { InfiniteScroll } from 'mint-ui';
+import 'mint-ui/lib/style.css'
+
+
+
+Vue.use(InfiniteScroll);
+
+import MyPlugin from './components/common/js/plugin'
+
+Vue.use(MyPlugin)
 Vue.use(VueWechatTitle)
 Vue.config.productionTip = false
 

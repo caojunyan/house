@@ -4,17 +4,21 @@
       <!--客户查询-->
       <el-tab-pane label="客户查询" name="query">
         <el-form :inline="true" :model="queryForm" class="queryForm">
-          <el-form-item label="查询客户：">
+          <el-form-item style="width: 70%">
             <el-input v-model="queryForm.user" placeholder="请输入用户姓名"></el-input>
           </el-form-item>
-          <el-form-item>
+          <el-form-item style="width: 20%">
             <el-button type="primary" @click="onSubmit">查询</el-button>
           </el-form-item>
         </el-form>
         <!--查询结果-->
-        <ul class="list">
-          <li>
-            <span>张三</span>
+        <ul class="list"
+            v-infinite-scroll="loadMore"
+            infinite-scroll-disabled="rolling"
+            infinite-scroll-distance="10"
+        >
+          <li v-for="(item,index) in customerList" :key="index" @click="toDetail(item.id)">
+            <span>{{item.name}}</span>
             <b class="el-icon-arrow-right"></b>
           </li>
         </ul>
@@ -25,7 +29,7 @@
       </el-tab-pane>
       <el-tab-pane label="异常客户" name="add">
         <el-form :inline="true" :model="abnormalQuery" class="queryForm">
-          <el-form-item label="查询客户：">
+          <el-form-item style="width: 70%">
             <el-input v-model="abnormalQuery.user" placeholder="请输入用户姓名"></el-input>
           </el-form-item>
           <el-form-item>
@@ -36,7 +40,9 @@
         <ul class="list">
           <li>
             <span>张三</span>
-            <b class="el-icon-arrow-right"></b>
+            <el-button type="text" size="mini" round>处理</el-button>
+            <el-button type="text" size="mini" round>详细信息</el-button>
+           <!-- <b class="el-icon-arrow-right"></b>-->
           </li>
         </ul>
         <div class="loading">
@@ -49,11 +55,30 @@
 </template>
 
 <script>
-
+  import {getCustomers,getAbnormal} from '../../api/api'
+  import axios from 'axios'
   export default {
     data() {
+      let checkPhone = (rule, value, callback) => {
+        let regPhone = /^1[3|4|5|7}8][0-9]\d{4,8}$/;
+        if (value === "") {
+          callback(new Error("请输入手机号"));
+        } else if (!regPhone.test(value) || value.length != 11) {
+          callback(new Error("请输入正确的手机号"));
+        } else {
+          callback();
+        }
+      };
       return {
+        nextUrl: [],
+        previousUrl: [],
+        page:"",
+        url:"",
+        current_page:"",
+        total_pages:"",
+        rolling:false,
         queryTabs: 'query',
+        customerList:[],
         queryForm: {
           user: '',
         },
@@ -61,19 +86,67 @@
           user: '',
        },
         loading:false,
+        // 异常列表
+        pageAbnormal:1,
+
       };
     },
     methods: {
+      loadMore() {
+        this.current_page++;
+        this.loading = true;
+        if (this.current_page <= this.total_pages) {
+          this.rolling=true;
+          axios.get(this.url + this.current_page).then((res) => {
+            this.customerList = this.customerList.concat(res.data.data);
+            setTimeout(()=>{
+              this.rolling=false;
+            },3000)
+          }).catch(err=>{
+            alert('请求过于频繁，请稍后再试')
+          });
+        }else{
+          this.loading = false;
+          return;
+        }
+      },
+      toDetail(id){
+        this.$router.push({
+          path:'/detail',
+          query:{
+            id:id
+          }
+        })
+      },
       handleClick(tab, event) {
         console.log(tab, event);
       },
       onSubmit() {
         console.log('submit!');
       },
-
+      getList(){
+        getCustomers(this).then(res=>{
+          this.customerList=res.data
+          //      当前页码
+          this.page=res.meta.pagination.current_page;
+          this.url="https://fdd.api.jiahaichuang.com/api/customers?page=";
+          this.current_page=res.meta.pagination.current_page;
+          //      总页码
+          this.total_pages=res.meta.pagination.total_pages
+          this.id =res.code
+        }).catch(err=>{
+          console.log(err)
+        })
+      },
+      getListAbnormal(){
+        getAbnormal(this,1).then(res=>{
+          console.log(res)
+        })
+      }
     },
     mounted(){
-
+      this.getList()
+      this.getListAbnormal()
     }
   };
 </script>
