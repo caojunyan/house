@@ -13,8 +13,8 @@
       </el-form>
        <!--查询结果-->
       <ul class="list">
-        <li>
-          <span>张三</span>
+        <li v-for="(item,index) in customerList" :key="index">
+          <span>{{item.name}}</span>
           <b class="el-icon-arrow-right"></b>
         </li>
       </ul>
@@ -25,91 +25,63 @@
     </el-tab-pane>
     <el-tab-pane label="添加客户" name="add">
       <div  class="addForm">
-        <el-form :label-position="labelPosition" label-width="60px" :model="addCustomer">
-          <el-form-item label="名称：">
-            <el-input v-model="addCustomer.name" placeholder="请输入客户姓名"></el-input>
+        <el-form :label-position="labelPosition" label-width="60px" :model="customerForm">
+          <el-form-item label="名称：" prop="name">
+            <el-input v-model="customerForm.name" placeholder="请输入客户姓名"></el-input>
           </el-form-item>
-          <el-form-item label="电话：">
-            <el-input v-model="addCustomer.phone" placeholder="请输入手机号码"></el-input>
+          <el-form-item label="电话：" prop="telephone">
+            <el-input v-model="customerForm.telephone" placeholder="请输入手机号码"></el-input>
           </el-form-item>
           <el-form-item label="备注：">
-            <el-input v-model="addCustomer.note" type="textarea" placeholder="备注"></el-input>
+            <el-input v-model="customerForm.remark" type="textarea" placeholder="备注"></el-input>
           </el-form-item>
+          <el-button type="primary" @click="subCustomer" style="width:100%;margin-top:30px">提交</el-button>
           <div class="upload">
             <p>身份证图片（共有房产需提供两人身份证和关系证明资料，如结婚证和户口本）</p>
-            <el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            <el-upload :action='"https://fdd.api.jiahaichuang.com/api/customers/"+ id +"/credentials"' list-type="picture-card" :data="{type:'idImage'}" :file-list="idImage" :headers="{Authorization:'Bearer '+user_token}" :on-preview="handlePictureCardPreview" :on-error="handleError" :on-remove="handleRemove" multiple>
+              <i class="el-icon-plus"></i>
             </el-upload>
-
-             <p>征信报告 （提供15天以内人行详细版征信报告）</p>
-            <el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            <el-dialog :visible.sync="dialogVisible">
+              <img width="100%" :src="dialogImageUrl" alt="">
+            </el-dialog>
+            <p>户口本（户主和本人）</p>
+            <el-upload :action='"https://fdd.api.jiahaichuang.com/api/customers/"+ id +"/credentials"' list-type="picture-card" :data="{type:'registeredResidence'}" :file-list="registeredResidence" :headers="{Authorization:'Bearer '+user_token}" :on-preview="handlePictureCardPreview" :on-error="handleError" :on-remove="handleRemove" multiple>
+              <i class="el-icon-plus"></i>
             </el-upload>
-             <p>商业产权调查 （提供15天以内人行详细版征信报告）</p>
-            <el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleIdcardsuccess"
-              :before-upload="beforeidcard">
-              <img v-if="idCard" :src="idCard" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            <el-dialog :visible.sync="dialogVisible">
+              <img width="100%" :src="dialogImageUrl" alt="">
+            </el-dialog>
+            <p>征信报告 （提供15天以内人行详细版征信报告）</p>
+            <el-upload :action='"https://fdd.api.jiahaichuang.com/api/customers/"+ id +"/credentials"' list-type="picture-card" :data="{type:'creditReport'}" :file-list="creditReport" :headers="{Authorization:'Bearer '+user_token}" :on-preview="handlePictureCardPreview" :on-error="handleError" :on-remove="handleRemove" multiple>
+              <i class="el-icon-plus"></i>
             </el-upload>
-             <p>房产证或购房合同加购房发票 （提供15天以内人行详细版征信报告）</p>
-            <el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            <p>商业产权调查（15天内） </p>
+            <el-upload :action='"https://fdd.api.jiahaichuang.com/api/customers/"+ id +"/credentials"' list-type="picture-card" :data="{type:'commercialPropertyInvestigation'}" :file-list="commercialPropertyInvestigation" :headers="{Authorization:'Bearer '+user_token}" :on-preview="handlePictureCardPreview" :on-error="handleError" :on-remove="handleRemove" multiple>
+              <i class="el-icon-plus"></i>
             </el-upload>
-             <p>抵押给银行的必须要抵押或按揭合同</p>
-            <el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            <p>房产证或购房合同加购房发票 </p>
+            <el-upload :action='"https://fdd.api.jiahaichuang.com/api/customers/"+ id +"/credentials"' list-type="picture-card" :data="{type:'realEstateLicense'}" :file-list="realEstateLicense" :headers="{Authorization:'Bearer '+user_token}" :on-preview="handlePictureCardPreview" :on-error="handleError" :on-remove="handleRemove" multiple>
+              <i class="el-icon-plus"></i>
             </el-upload>
-             <p>工作证明或营业执照复印件</p>
-            <el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            <p>银行卡</p>
+            <el-upload :action='"https://fdd.api.jiahaichuang.com/api/customers/"+ id +"/credentials"' list-type="picture-card" :data="{type:'debitCard'}" :file-list="debitCard" :headers="{Authorization:'Bearer '+user_token}" :on-preview="handlePictureCardPreview" :on-error="handleError" :on-remove="handleRemove" multiple>
+              <i class="el-icon-plus"></i>
             </el-upload>
-             <p>有离婚的，离婚协议涉及财产分割必须要民政局的盖章</p>
-            <el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            <p>工作证明或营业执照复印件 </p>
+            <el-upload :action='"https://fdd.api.jiahaichuang.com/api/customers/"+ id +"/credentials"' list-type="picture-card" :data="{type:'workProof'}" :file-list="workProof" :headers="{Authorization:'Bearer '+user_token}" :on-preview="handlePictureCardPreview" :on-error="handleError" :on-remove="handleRemove" multiple>
+              <i class="el-icon-plus"></i>
+            </el-upload>
+            <p>抵押给银行的必须要抵押或按揭合同，没有的可以去银行补打（选传） </p>
+            <el-upload :action='"https://fdd.api.jiahaichuang.com/api/customers/"+ id +"/credentials"' list-type="picture-card" :data="{type:'mortgageContract'}" :file-list="mortgageContract" :headers="{Authorization:'Bearer '+user_token}" :on-preview="handlePictureCardPreview" :on-error="handleError" :on-remove="handleRemove" multiple>
+              <i class="el-icon-plus"></i>
+            </el-upload>
+            <p>若离婚，离婚协议涉及财产分割必须要民政局的盖章（选传）</p>
+            <el-upload :action='"https://fdd.api.jiahaichuang.com/api/customers/"+ id +"/credentials"' list-type="picture-card" :data="{type:'divorceAgreement'}" :file-list="divorceAgreement" :headers="{Authorization:'Bearer '+user_token}" :on-preview="handlePictureCardPreview" :on-error="handleError" :on-remove="handleRemove" multiple>
+              <i class="el-icon-plus"></i>
             </el-upload>
           </div>
         </el-form>
-         <el-button type="primary" @click="subCustomer" style="width:100%;margin-top:30px">送审</el-button>
+         <el-button type="primary" @click="sendCustomer" style="width:100%;margin-top:30px">送审</el-button>
       </div>
     </el-tab-pane>
   </el-tabs>
@@ -117,23 +89,35 @@
 </template>
 
 <script>
-
+import {getCustomers,submitCustomer} from '../../api/api'
   export default {
     data() {
       return {
+        id:1,
+        dialogImageUrl: "",
+        dialogVisible: false,
+        user_token: localStorage.getItem("user_token"),
+        customerList:[],
         queryTabs: 'query',
         queryForm: {
           user: '',
         },
         loading:false,
         labelPosition: 'right',
-        addCustomer: {
+        customerForm: {
           name: '',
-          phone: '',
-          note: ''
+          telephone: '',
+          remark: ''
         },
-        idCard:"",
-        imageUrl: ''
+        idImage: [],
+        registeredResidence: [],
+        creditReport: [],
+        commercialPropertyInvestigation: [],
+        realEstateLicense: [],
+        debitCard: [],
+        workProof: [],
+        mortgageContract: [],
+        divorceAgreement: []
       };
     },
     methods: {
@@ -143,42 +127,40 @@
       onSubmit() {
         console.log('submit!');
       },
-      handleIdcardsuccess(res, file) {
-        this.idCard = URL.createObjectURL(file.raw);
+      handleRemove: function(file) {
+        //console.log(file);
+        deleteImage(this, file.response.code);
       },
-      handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+      handlePictureCardPreview: function(file) {
+        this.dialogImageUrl = file.url;
+        this.dialogVisible = true;
+        //console.log(file);
       },
-      beforeidcard(file) {
-        const isJPG = file.type === 'image/jpeg';
-        const isLt2M = file.size / 1024 / 1024 < 2;
-
-        if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
-        }
-        if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
-        }
-        return isJPG && isLt2M;
-      },
-      beforeAvatarUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
-        const isLt2M = file.size / 1024 / 1024 < 2;
-
-        if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
-        }
-        if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
-        }
-        return isJPG && isLt2M;
+      handleError: function(err, file, fileList) {
+        this.$message({
+          type: "warning",
+          message: "上传失败"
+        });
       },
       subCustomer(){
+        submitCustomer(this,this.customerForm).then(res=>{
+          this.id=res.code
+          console.log(res)
+        })
+      },
+      sendCustomer(){
 
+      },
+      getList(){
+        getCustomers(this).then(res=>{
+          this.customerList=res.data
+          this.id =res.code
+          console.log(this.customerList)
+        })
       }
     },
     mounted(){
-
+    this.getList()
     }
   };
 </script>

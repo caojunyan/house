@@ -22,19 +22,28 @@
 </template>
 
 <script>
-    export default {
+  import {getAdmin,getUser} from "../../api/api";
+
+  export default {
         name: "login",
         data(){
+          let checkPhone = (rule, value, callback) => {
+            let regPhone = /^1[3|4|5|7}8][0-9]\d{4,8}$/;
+            if (value === "") {
+              callback(new Error("请输入手机号"));
+            } else if (!regPhone.test(value) || value.length != 11) {
+              callback(new Error("请输入正确的手机号"));
+            } else {
+              callback();
+            }
+          };
           return {
             user:{
-              email:'',
-              password:""
+              email:'18672776975',
+              password:"123456"
             },
             rules:{
-              email: [
-                { required: true, message: '请输入用户名', trigger: 'blur' },
-                { min: 11, max: 11, message: '手机号格式不正确', trigger: 'blur' }
-              ],
+              email:  [{ validator: checkPhone, trigger: "blur" }],
               password: [
                 { required: true, message: '请输入密码', trigger: 'blur' },
                 { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
@@ -44,7 +53,24 @@
         },
       methods:{
         submitForm(){
-
+          getAdmin(this,this.user).then(res=>{
+            if(res){
+              getUser(this).then(res=>{
+                if(res.data.data.depart==="业务B组"){
+                  this.$router.push({ path: '/sales' });
+                }else if(res.data.data.depart==="资产管理部门"){
+                  this.$router.push({ path: '/abnormal' });
+                }else{
+                  this.$message.error('您没有登录权限');
+                  return false
+                }
+              })
+            }else{
+              this.$message.error('您没有登录权限');
+            }
+          }).catch(err=>{
+            console.log(err)
+          })
         }
       }
     }
@@ -72,7 +98,7 @@
     margin-top 80px
     .el-form-item
       background #fff
-      border-radius 22px
+      border-radius 30px
       height 50px
       img
         width 15px
