@@ -93,7 +93,7 @@
 </template>
 
 <script>
-  import {getCustomers,submitCustomer,sendAssesses,deleteImage} from '../../api/api'
+  import {getCustomers,submitCustomer,sendAssesses,deleteImage,getCustomersByName} from '../../api/api'
   import axios from 'axios'
   export default {
     data() {
@@ -181,7 +181,15 @@
         console.log(tab, event);
       },
       onSubmit() {
-        console.log('submit!');
+        this.customerList=[]
+        getCustomersByName(this,this.queryForm.user).then(res=>{
+         if(res.data.data.length>0){
+           this.customerList=res.data.data
+         }else{
+           alert("没有查到结果")
+           this.getList()
+         }
+        })
       },
       handleRemove: function(file) {
         deleteImage(this, file.response.code);

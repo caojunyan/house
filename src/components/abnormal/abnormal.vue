@@ -33,15 +33,18 @@
             <el-input v-model="abnormalQuery.user" placeholder="请输入用户姓名"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">查询</el-button>
+            <el-button type="primary" @click="onSubmitAbnormal">查询</el-button>
           </el-form-item>
         </el-form>
         <!--查询结果-->
-        <ul class="list">
-          <li>
-            <span>张三</span>
-            <el-button type="text" size="mini" round>处理</el-button>
-            <el-button type="text" size="mini" round>详细信息</el-button>
+        <ul class="list"
+            v-infinite-scroll="loadMore1"
+            infinite-scroll-disabled="rolling1"
+            infinite-scroll-distance="10">
+          <li v-for="(item,index) in abnormalList" :key="index" >
+            <span>{{item.order.data.name}}</span>
+            <el-button type="text" size="mini" round @click="toDeal(item.id,item.order.data.name)">处理</el-button>
+            <el-button type="text" size="mini" round @click="toDetail(item.order.data.id)">详细信息</el-button>
            <!-- <b class="el-icon-arrow-right"></b>-->
           </li>
         </ul>
@@ -55,7 +58,7 @@
 </template>
 
 <script>
-  import {getCustomers,getAbnormal} from '../../api/api'
+  import {getCustomers,getAbnormal,getCustomersByName,getAbnormalByname} from '../../api/api'
   import axios from 'axios'
   export default {
     data() {
@@ -70,6 +73,13 @@
         }
       };
       return {
+        nextUrl1: [],
+        previousUrl1: [],
+        page1:"",
+        url1:"",
+        current_page1:"",
+        total_pages1:"",
+
         nextUrl: [],
         previousUrl: [],
         page:"",
@@ -77,6 +87,7 @@
         current_page:"",
         total_pages:"",
         rolling:false,
+        rolling1:false,
         queryTabs: 'query',
         customerList:[],
         queryForm: {
@@ -85,6 +96,7 @@
         abnormalQuery: {
           user: '',
        },
+        abnormalList:[],
         loading:false,
         // 异常列表
         pageAbnormal:1,
@@ -110,6 +122,24 @@
           return;
         }
       },
+      loadMore1() {
+        this.current_page1++;
+        this.loading1 = true;
+        if (this.current_page1 <= this.total_pages1) {
+          this.rolling1=true;
+          axios.get(this.url1 + this.current_page1).then((res) => {
+            this.abnormalList = this.abnormalList.concat(res.data.data);
+            setTimeout(()=>{
+              this.rolling1=false;
+            },3000)
+          }).catch(err=>{
+            alert('请求过于频繁，请稍后再试')
+          });
+        }else{
+          this.loading = false;
+          return;
+        }
+      },
       toDetail(id){
         this.$router.push({
           path:'/detail',
@@ -118,11 +148,39 @@
           }
         })
       },
+      toDeal(id,name){
+        this.$router.push({
+          path:'/deal',
+          query:{
+            id:id,
+            name:name
+          }
+        })
+      },
       handleClick(tab, event) {
         console.log(tab, event);
       },
       onSubmit() {
-        console.log('submit!');
+        this.customerList=[]
+        if(this.queryForm.user===""){
+          alert("请输入客户名")
+          this.getList()
+        }else{
+          getCustomersByName(this,this.queryForm.user).then(res=>{
+            if(res.data.data.length>0){
+              this.customerList=res.data.data
+            }else{
+              alert("没有查询到数据")
+              this.getList()
+            }
+          })
+        }
+      },
+      onSubmitAbnormal(){
+        this.abnormalList=[]
+        getAbnormalByname(this,this.abnormalQuery.user).then(res=>{
+         this.abnormalList=res.data.data
+        })
       },
       getList(){
         getCustomers(this).then(res=>{
@@ -140,7 +198,13 @@
       },
       getListAbnormal(){
         getAbnormal(this,1).then(res=>{
-          console.log(res)
+          this.abnormalList=res.data
+          //      当前页码
+          this.page1=res.meta.pagination.current_page;
+          this.url1="https://fdd.api.jiahaichuang.com/api/orderAbnormals/status/1?include=order&page=";
+          this.current_page1=res.meta.pagination.current_page;
+          //      总页码
+          this.total_pages1=res.meta.pagination.total_pages
         })
       }
     },

@@ -7,14 +7,21 @@ import Sales from '../components/sales/sales'
 import Abnormal from '../components/abnormal/abnormal'
 import Deal from '../components/deal/deal'
 import Detail from '../components/detail/detail'
-
+import Query from '../components/query/query'
 Vue.use(ElementUI);
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
-      path: '/',
+      path: '*',
+      redirect:'/login',
+      meta:{
+        title:"登陆"
+      }
+    },
+    {
+      path: '/login',
       name: 'Login',
       component: Login,
       meta:{
@@ -51,6 +58,14 @@ export default new Router({
       component:Detail,
       meta:{
         title:"客户详情"
+      }
+    },
+    {
+      path:'/query',
+      name:Query,
+      component:Query,
+      meta:{
+        title:"客户查询"
       }
     },
   ]

@@ -67,19 +67,47 @@ export const getImages = (_this, id, type) => {
 };
 // 根据客户id查找
 export const getCustomersById = (_this,id) => {
-  return axios.get("/customers?include=orders&id="+id ).then(res => {
+  return axios.get("/customers/"+id+'?include=credentials' ).then(res => {
     return res.data;
   }).catch(err => {
 
   })
 };
 
+// 根据客户名查询
+export const getCustomersByName = (_this,name) => {
+  return axios.get("/customers/query/clientName?name="+name ).then(res => {
+    return res;
+  }).catch(err => {
+
+  })
+};
 // 获取异常表
-export const getAbnormal = (_this, page) => {
-  return axios.get("/abnromal?page=" + page).then(res => {
+export const getAbnormal = (_this,status) => {
+  return axios.get("/orderAbnormals/status/"+status+'?include=order' ).then(res => {
     // Message("提交成功");
     return res.data;
   }).catch(err => {
 
   });
 };
+
+// 贷后处理异常
+export const dealAbnormal=(_this,id,_data)=>{
+  return axios.post("/customerOrders/"+id+"/dealWiths",_data).then(res=>{
+    return res
+  })
+}
+// 根据客户名查询异常客户
+export const getAbnormalByname=(_this,name)=>{
+  return axios.get("/customers/abnormals/clientName?name="+name+'&include=order').then(res=>{
+    return res
+  })
+}
+
+// 贷后人员列表
+export const getAssetsList=(_this)=>{
+  return axios.get('showAsset').then(res=>{
+    return res
+  })
+}

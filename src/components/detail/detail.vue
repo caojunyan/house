@@ -161,7 +161,6 @@
               telephone: '',
               remark: ''
             },
-
             dialogImageUrl: "",
             dialogVisible: false,
             user_token: localStorage.getItem("user_token"),
@@ -185,11 +184,47 @@
       },
       mounted(){
         getCustomersById(this,this.id).then(res=>{
-
+            this.addCustomer=res.data
         })
-       /* getImages(this,this.id,type).then(res=>{
-          console.log(res)
-        })*/
+        getImages(this, this.id, "idImage").then(data => {
+          this.idImage = data.data;
+        });
+        getImages(this, this.id, "registeredResidence").then(
+          data => {
+            this.registeredResidence = data.data;
+          }
+        );
+        getImages(this, this.id, "creditReport").then(data => {
+          this.creditReport = data.data;
+        });
+        getImages(
+          this,
+          this.id,
+          "commercialPropertyInvestigation"
+        ).then(data => {
+          this.commercialPropertyInvestigation = data.data;
+        });
+        getImages(this, this.id, "realEstateLicense").then(
+          data => {
+            this.realEstateLicense = data.data;
+          }
+        );
+        getImages(this, this.id, "debitCard").then(data => {
+          this.debitCard = data.data;
+        });
+        getImages(this, this.id, "workProof").then(data => {
+          this.workProof = data.data;
+        });
+        getImages(this, this.id, "mortgageContract").then(
+          data => {
+            this.mortgageContract = data.data;
+          }
+        );
+        getImages(this, this.id, "divorceAgreement").then(
+          data => {
+            this.divorceAgreement = data.data;
+          }
+        );
       }
     }
 </script>

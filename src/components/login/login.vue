@@ -39,8 +39,8 @@
           };
           return {
             user:{
-              email:'18672776975',
-              password:"123456"
+              email:'',
+              password:""
             },
             rules:{
               email:  [{ validator: checkPhone, trigger: "blur" }],
@@ -65,16 +65,14 @@
                     }else if(res.data.data.depart==="资产管理部门"){
                       this.$router.push({ path: '/abnormal' });
                     }else{
-                      this.$message.error('您没有登录权限');
-                      return false
+                      this.$router.push({ path: '/query' });
                     }
                   })
-                }else{
+                }/*else{
                   this.$message.error('您没有登录权限');
-                }
+                }*/
               }).catch(err=>{
                 alert('用户名或密码错误')
-                return false
               })
             } else {
               console.log('error submit!!');
